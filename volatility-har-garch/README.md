@@ -1,6 +1,5 @@
 # Realized Volatility Forecasting — HAR vs. GARCH
 
-<p align="right"><a href="README.ru.md">🇷🇺 Читать на русском</a></p>
 
 Comparing two families of volatility models — **HAR** (Heterogeneous Autoregressive) and
 **GARCH** — on real equity data.
@@ -39,4 +38,4 @@ Report/                 # LaTeX report + compiled PDF + figures
 
 ---
 
-*Course project (Vega Institute), completed in a team: Maksim Kiryakin, Daria Kurenkova, Natalia Koval.*
+*Course project, Vega Institute. Author: Maksim Kiryakin.*

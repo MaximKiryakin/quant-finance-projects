@@ -1,6 +1,5 @@
 # Sales Forecasting — Econometric vs. ML Models
 
-<p align="right"><a href="README.ru.md">🇷🇺 Читать на русском</a></p>
 
 Forecasting daily store sales using **time-series econometrics** and benchmarking against
 machine-learning baselines.
@@ -45,4 +44,4 @@ jupyter notebook Project1.ipynb
 
 ---
 
-*Course project (Vega Institute), completed in a team: Maksim Kiryakin, Daria Kurenkova, Natalia Koval.*
+*Course project, Vega Institute. Author: Maksim Kiryakin.*

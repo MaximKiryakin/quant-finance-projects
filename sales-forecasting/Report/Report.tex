@@ -2,14 +2,13 @@
 
 
 \usepackage{amsmath}
-\usepackage{cmap}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[russian]{babel}
+\usepackage[english]{babel}
 \usepackage[left=1.5cm,right=1.5cm,top=2cm,bottom=2.5cm]{geometry}
 
 \usepackage[fontsize=13pt]{scrextend}
 
-% что-то за межстрочный интервал отвечающее
 \renewcommand{\baselinestretch}{1.3}
 
 \usepackage[nooneline]{caption}
@@ -29,11 +28,11 @@
 
 
 \usepackage[pdftex]{graphicx}
-\graphicspath{{/home/maxim/Projects/Vega/Finance Econometrics/Project1/Plots}}
+\graphicspath{{../Plots/}}
 
 \pagestyle{fancy}
-\lhead{\textbf{\normalsize Проект 1}}
-\rhead{\textbf{\normalsize Выполнили: }\normalsize Кирякин Максим, Куренкова Дарья, Коваль Наталия}
+\lhead{\textbf{\normalsize Project 1}}
+\rhead{\textbf{\normalsize Author: }\normalsize Maksim Kiryakin}
 
 
 
@@ -41,29 +40,29 @@
 
 {
 	\Large
-	\href{https://github.com/MaximKiryakin/Vega/tree/FinanceEconometrics/Project1}{Репозиторий проекта}.
+	\href{https://github.com/MaximKiryakin/quant-finance-projects/tree/main/sales-forecasting}{Project repository}.
 }
 
-\section{Постановка задачи}
+\section{Problem statement}
 
-В работе было необходимо построить прогноз значений временного ряда с помощью моделей эконометрики, рассмотренных в курсе.
+The goal of this work is to forecast the values of a time series using the econometric models covered in the course.
 
-Модель ARIMA(p,d,q) -- это расширение моделей типа ARMA на нестационарные временные ряды, которые однако могут стать стационарным после применения процедуры дифференцирования ряда. Модель ARIMA(p, d, q) для ряда $y_t$ определяется как модель ARMA(p,q) для ряда разностей порядка d ряда $y_t$.
+The ARIMA(p, d, q) model extends ARMA-type models to non-stationary time series that can be made stationary after differencing. The ARIMA(p, d, q) model for a series $y_t$ is defined as an ARMA(p, q) model applied to the $d$-th order differences of $y_t$.
 
-$\textbf{ARIMA(p, d, q)}$ модель:
+The $\textbf{ARIMA(p, d, q)}$ model:
 \begin{equation*}
 	\Delta^d y_t = \alpha_1 \Delta^d y_{t-1} + ... + \alpha_p\Delta^dy_{t-p} + \varepsilon_t + \beta_1\varepsilon_{t-1} + ... + \beta_q\varepsilon_{t-q},
 \end{equation*}
 
-где: $y_t$ -- значение временного ряда в момент времени $t$, $\Delta^d = (1 - L)^d$, $\varepsilon_t$ - белый шум. L - лаговый оператор.
+where $y_t$ is the value of the time series at time $t$, $\Delta^d = (1 - L)^d$, $\varepsilon_t$ is white noise, and $L$ is the lag operator.
 
-Обобщение модели ARIMA на ряды с наличием сезонной составляющей назвается SARIMA. Пусть s — известная сезонность ряда. Добавим в модель ARIMA(p,d,q) компоненты, отвечающие за значения в предыдущие сезоны. Тогда модель SARIMA может быть записана следующим образом:
+The generalization of the ARIMA model to series with a seasonal component is called SARIMA. Let $s$ be the known seasonality of the series. We add to the ARIMA(p, d, q) model the components responsible for values in previous seasons. The SARIMA model can then be written as follows:
 
-$\textbf{SARIMA(p, d, q)(P, D, Q)s}$ модель:
+The $\textbf{SARIMA(p, d, q)(P, D, Q)s}$ model:
 
 \begin{equation*}
 	\begin{split}
-		\Delta^D_s\Delta^d y_t 
+		\Delta^D_s\Delta^d y_t
 		&= \alpha_1\Delta^D_s \Delta^d y_{t-1} + \dots + \alpha_p\Delta^D_s\Delta^dy_{t-p} \\
 		&\quad+ \varepsilon_t + \beta_1\varepsilon_{t-1} + \dots + \beta_q\varepsilon_{t-q} \\
 		&\quad+ \alpha_1^s\Delta^D_s \Delta^d y_{t-s} + \dots + \alpha_p^s\Delta^D_s \Delta^d y_{t-ps} \\
@@ -71,52 +70,50 @@ $\textbf{SARIMA(p, d, q)(P, D, Q)s}$ модель:
 	\end{split}
 \end{equation*}
 
-где: $\Delta^D_s = (1 - L^s)^D$
+where $\Delta^D_s = (1 - L^s)^D$.
 
 
 
-Обобщением SARIMA модели является SARIMAX модель.
-SARIMAX (Seasonal AutoRegressive Integrated Moving Average with eXogenous inputs) – это эконометрическая модель для прогнозирования временных рядов с учетом сезонности и внешних факторов.
+A further generalization of SARIMA is the SARIMAX model. SARIMAX (Seasonal AutoRegressive Integrated Moving Average with eXogenous inputs) is an econometric model for time-series forecasting that accounts for seasonality and external factors.
 
 
-\section{Ход работы}
-\subsection{Данные}
+\section{Methodology}
+\subsection{Data}
 
-В работе решалась задача прогнозирования числа продаж в сети магазинов Эквадора за 2016 год. \href{https://www.kaggle.com/c/store-sales-time-series-forecasting/data}{Данные} были взяты с сайта Kaggle. Всего в работе использовались 3 файла (train.csv, stores.csv, oil.csv), на основе которых формировался итоговый датасет.
+This work addresses forecasting the number of sales for a retail chain in Ecuador for 2016. The \href{https://www.kaggle.com/c/store-sales-time-series-forecasting/data}{data} were taken from Kaggle. Three files were used (train.csv, stores.csv, oil.csv), from which the final dataset was assembled.
 
-Описание значений переменных файла train.csv:
+Description of the variables in train.csv:
 \begin{itemize}
-	\item  $store\_nbr$ идентифицирует магазин, в котором продаются товары.  
-	\item  $family$ определяет тип продаваемого продукта.  
-	\item  $sales$ указывает общую сумму продаж для определенной группы товаров в конкретном магазине на заданную дату. Возможны дробные значения, так как товары могут продаваться в дробных единицах (например, 1,5 кг сыра вместо 1 пакета чипсов).  
-	\item  $onpromotion$ указывает общее количество товаров в группе продуктов, которые были на акции в магазине на заданную дату.
+	\item $store\_nbr$ identifies the store where the goods are sold.
+	\item $family$ identifies the type of product sold.
+	\item $sales$ is the total sales for a given product group in a particular store on a given date. Fractional values are possible, since goods can be sold in fractional units (e.g., 1.5 kg of cheese rather than 1 bag of chips).
+	\item $onpromotion$ is the total number of items in a product group that were on promotion in the store on a given date.
 \end{itemize}
 
-Файл stores.csv содержит метаданные магазинов, включая город, штат, тип и кластер (все магазины были разбиты на группы по схожести). Файл oil.csv содержит ежедневные цены на нефть. Включает значения как в период обучения, так и в период тестирования. (Эквадор — страна, зависимая от нефти, и ее экономическое состояние сильно подвержено колебаниям цен на нефть.)
+The stores.csv file contains store metadata, including city, state, type, and cluster (all stores were grouped by similarity). The oil.csv file contains daily oil prices, covering both the training and the test periods. (Ecuador is an oil-dependent country, and its economic condition is strongly affected by oil-price fluctuations.)
 
-\subsection{Модели и их валидация}
+\subsection{Models and their validation}
 
-Было рассмотрено 3 модели для прогнозирования временного ряда:
+Three models were considered for forecasting the time series:
 \begin{itemize}
-	\item ARIMA модель с ручной настройкой параметров p, d и q
-	\item SARIMAX модель
-	\item Модель машинного обучения (градиентный бустинг XGBRegressor)
+	\item ARIMA model with manual tuning of the parameters p, d, and q
+	\item SARIMAX model
+	\item Machine-learning model (gradient boosting, XGBRegressor)
 \end{itemize}
 
 
-Качество оценивалось с помощью следующих метрик: MSE, RMSE, MAE, абсолютная процентная ошибка. Результаты сравнивались с наивным прогнозом -- средним числом продаж за последние 3 месяца. 
+Quality was assessed using the following metrics: MSE, RMSE, MAE, and absolute percentage error. The results were compared against a naive forecast --- the average number of sales over the last 3 months.
 
-Для моделей SARIMAX и бустинга рассматривались два подхода. В первом случае в качестве переменных в модель подавались временные признаки: номера месяца, квартала, дня в году и недели, а также день недели.
-Кроме этого, использовались <<лаговые переменные>>: число продаж в эту же дату год, два и три назад (если есть данные за этот период). Такой подход позволяет получать прогноз модели на любое число дней вперед. Во втором случае к этим переменным добавлялись переменные из датасета: цена на топливо за выбранную дату, число акций в магазинах и число транзакций. Трудность второго подхода заключается в том, что мы не знаем будущие значений добавленных драйверов заранее. Если мы хотим получить прогноз на даты, которых нет в нашем датасете, -- величины драйверов тоже придется предсказывать.
+For the SARIMAX and boosting models, two approaches were considered. In the first case, the model was fed time-based features: the index of the month, quarter, day of the year, and week, as well as the day of the week. In addition, ``lag features'' were used: the number of sales on the same date one, two, and three years earlier (where data for that period exist). This approach allows forecasting any number of days ahead. In the second case, dataset-derived variables were added to these features: the fuel price on the chosen date, the number of promotions in stores, and the number of transactions. The difficulty of the second approach is that we do not know the future values of the added drivers in advance. To forecast dates not present in our dataset, the driver values must also be predicted.
 
-\subsection{Предварительная обработка данных}
+\subsection{Data preprocessing}
 
-Переменные датасета требовали предварительной предобработки. Например, в значениях цены на газ были пропуски, которые были заполнены с помощью интерполяции квадратичными сплайнами. На рисунках \ref{price_raw} и \ref{price_solid} приведены графики цены до интерполяции и после соответственно.
+The dataset variables required preprocessing. For example, the oil-price values had gaps, which were filled using quadratic-spline interpolation. Figures \ref{price_raw} and \ref{price_solid} show the price before and after interpolation, respectively.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.\textwidth]{OilPrice.png}
-	\caption{Цена за литр топлива в Эквадоре до интерполяции.}
+	\caption{Fuel price per liter in Ecuador before interpolation.}
 	\label{price_raw}
 \end{figure}
 
@@ -124,139 +121,139 @@ SARIMAX (Seasonal AutoRegressive Integrated Moving Average with eXogenous inputs
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.\textwidth]{OilPriceEnterpolated.png}
-	\caption{Цена за литр топлива в Эквадоре после интерполяции.}
+	\caption{Fuel price per liter in Ecuador after interpolation.}
 	\label{price_solid}
 \end{figure}
 
-Кроме этого, категориальные переменные, такие как тип магазина, его локация и флаг праздничного дня, были закодированы числовыми значениями. Однако далее все эти признаки были исключены из модели из-за маленькой дисперсии (весь признак мог быть заполнен одним значением) или из-за их мальтиколлинеарности. Кроме того, для этих признаков наблюдалось большая доля пропусков, порядка 80 процентов.
+In addition, categorical variables such as store type, store location, and the holiday flag were encoded numerically. However, all of these features were later excluded from the model due to low variance (a feature could be filled entirely with a single value) or multicollinearity. Moreover, these features had a large share of missing values, on the order of 80 percent.
 
-\subsection{Обучение моделей}
+\subsection{Model training}
 
-\subsubsection{Наивный прогноз}
+\subsubsection{Naive forecast}
 
-Как уже было описано ранее, для наивного прогноза использовалось среднее значение продаж в Эквадоре за последние 3 месяца 2016 года. График прогноза приведен на рисунке \ref{naive}.
+As described earlier, the naive forecast used the average sales in Ecuador over the last 3 months of 2016. The forecast is shown in Figure \ref{naive}.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.\textwidth]{SalesNaive.png}
-	\caption{Наивный прогноз для продаж в Эквадоре.}
+	\caption{Naive forecast for sales in Ecuador.}
 	\label{naive}
 \end{figure}
 
-Для прогноза были измерены основные метрики. Их значения приведены в таблице \ref{tab:1}.
+The main metrics were measured for the forecast. Their values are given in Table \ref{tab:1}.
 
 \begin{table}[h!]
 	\centering
-	\caption{Значения метрик на прогнозе модели градиентного бустинга.}
+	\caption{Metric values for the naive forecast.}
 	\begin{tabularx}{\textwidth}{|X|l|l|l|l|}
 		\hline
-								& MSE       & RMSE   & MAE    & Процентная ошибка \\ \hline
-		{Временные переменные}  & 20703.85  & 143.88 & 114.75 & 0.2               \\ \hline
+								& MSE       & RMSE   & MAE    & Percentage error \\ \hline
+		{Time features}         & 20703.85  & 143.88 & 114.75 & 0.2               \\ \hline
 	\end{tabularx}
 	\label{tab:1}
 \end{table}
 
 
 
-\subsubsection{ARIMA модель}
+\subsubsection{ARIMA model}
 
-Выбор параметров для ARIMA модели осуществлялся на основе значений функций автокорреляции и частичной автокорреляции. Стационарность ряда проверялась с помощью теста  Дики — Фуллера.
+The parameters for the ARIMA model were selected based on the autocorrelation and partial-autocorrelation functions. Stationarity of the series was tested using the Dickey--Fuller test.
 
-Было установлено, что исходный ряд не является стационарным ($p-value: 0.68$). После однократного дифференцирования ряд стал стационарным ($p-value: 6.33 \cdot 10^{-14}$). Кроме того, для ошибок был построен график их распределения, оно оказалось близко к нормальному. 
+It was found that the original series is not stationary ($p\text{-value}: 0.68$). After a single differencing, the series became stationary ($p\text{-value}: 6.33 \cdot 10^{-14}$). In addition, a distribution plot of the residuals was produced; it turned out to be close to normal.
 
-Результаты работы ARIMA модели проведены на рисунке \ref{fig:arima}.
+The results of the ARIMA model are shown in Figure \ref{fig:arima}.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.\textwidth]{SalesARIMA.png}
-	\caption{Прогноз ARIMA модели для числа продаж в Эквадоре.}
+	\caption{ARIMA model forecast for the number of sales in Ecuador.}
 	\label{fig:arima}
 \end{figure}
 
-Из графика видно, что модель не улавливает динамику ряда и очень скоро прогноз превращается в константный. Значения метрик для ARIMA модели приведены в таблице \ref{tab:arima}.
+The plot shows that the model does not capture the dynamics of the series, and the forecast quickly becomes constant. The metric values for the ARIMA model are given in Table \ref{tab:arima}.
 
 \begin{table}[h!]
 	\centering
-	\caption{Значения метрик на прогнозе ARIMA модели.}
+	\caption{Metric values for the ARIMA model forecast.}
 	\begin{tabularx}{\textwidth}{|X|l|l|l|l|}
 		\hline
-								& MSE       & RMSE   & MAE   & Процентная ошибка \\ \hline
-		{Временные переменные}  & 11908.6   & 109.13 & 93.53 & 1.491             \\ \hline
+								& MSE       & RMSE   & MAE   & Percentage error \\ \hline
+		{Time features}         & 11908.6   & 109.13 & 93.53 & 1.491             \\ \hline
 	\end{tabularx}
 	\label{tab:arima}
 \end{table}
 
 
 
-\subsubsection{SARIMAX модель}
+\subsubsection{SARIMAX model}
 
-Главное отличие SARIMAX модели от ARIMA модели -- ее способность учитывать сезонность в предсказании, а также дополнительные параметры, помимо значений самого ряда. Как уже было сказано выше, в качестве дополнительных параметров в модель подавались значения числа продаж в дату, цена топлива и числа акций в магазинах. Обучение модели проходило автоматически с помощью пакета $statsmodels$ языка Python. Кроме того, модель обучалась два раза: в первый раз -- только на временных и лаговых переменных, во второй -- с дополнительными переменными.
-Результаты предсказания модели приведены на рисунке \ref{fig:sarimax}. Значения метрик представлены в таблице  \ref{tab:sarimax}.
+The main difference of the SARIMAX model from the ARIMA model is its ability to account for seasonality in the prediction, as well as additional parameters beyond the values of the series itself. As mentioned above, the additional parameters fed to the model were the number of sales on the date, the fuel price, and the number of promotions in stores. The model was trained automatically using the Python $statsmodels$ package. The model was trained twice: first on time and lag features only, and second with the additional variables.
+The model predictions are shown in Figure \ref{fig:sarimax}. The metric values are presented in Table \ref{tab:sarimax}.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.\textwidth]{SalesSARIMAX.png}
-	\caption{Прогноз SARIMAX модели для числа продаж в Эквадоре.}
+	\caption{SARIMAX model forecast for the number of sales in Ecuador.}
 	\label{fig:sarimax}
 \end{figure}
 
 \begin{table}[h!]
 	\centering
-	\caption{Значения метрик на прогнозе SARIMAX модели.}
+	\caption{Metric values for the SARIMAX model forecast.}
 	\begin{tabularx}{\textwidth}{|X|l|l|l|l|}
 		\hline
-		& MSE          & RMSE   & MAE   & Процентная ошибка \\ \hline
-		{Временные переменные}                  & 24258.07 & 155.75 & 125.47 & 0.22\\ \hline
-		{Временные переменные + дополнительные} & 19785.57 & 140.661   & 88.76 & 0.15 \\ \hline
+		& MSE          & RMSE   & MAE   & Percentage error \\ \hline
+		{Time features}                  & 24258.07 & 155.75 & 125.47 & 0.22\\ \hline
+		{Time features + additional}     & 19785.57 & 140.661   & 88.76 & 0.15 \\ \hline
 	\end{tabularx}
 	\label{tab:sarimax}
 \end{table}
 
-Из графика и значений метрик видно, что учет в модели дополнительных параметров дает значительный прирост в качетсве предсказания.
+The plot and metric values show that including additional parameters in the model gives a significant improvement in prediction quality.
 
 
 \subsubsection{Boosting}
 
-В качестве дополнения к работе нам было интересно посмотреть, какие результаты покажет на тех же входных данных бустинг. Принцип работы бустинга принципиально отличается от эконометрических моделей, рассмотренных выше. 
+As an extension to the work, it was of interest to see how boosting performs on the same input data. The working principle of boosting is fundamentally different from the econometric models considered above.
 
-В работе рассматривался XGBRegressor из библиотеки $sklearn$. Обучение также как и для SARIMAX модели осуществлялось двумя подходами. Перебор гиперпараметров осуществлялся с помощью библиотеки $hyperopt$. В отличии от обычного перебора по сетке, данный подход использует средства Байесовской оптимизации. Кроме того, при переборе гиперпараметров использовалась кросс-валидация, адаптированная под временные ряды.
+The work used XGBRegressor from the $sklearn$ library. As with the SARIMAX model, training was carried out using two approaches. Hyperparameter search was performed with the $hyperopt$ library. Unlike an ordinary grid search, this approach uses Bayesian optimization. In addition, the hyperparameter search used cross-validation adapted to time series.
 
-Результаты предсказания модели приведены на рисунке \ref{fig:boosting}. Значения метрик представлены в таблице  \ref{tab:boosting}.
+The model predictions are shown in Figure \ref{fig:boosting}. The metric values are presented in Table \ref{tab:boosting}.
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.\textwidth]{SalesBoosting.png}
-	\caption{Прогноз модели градиентного бустинга для числа продаж в Эквадоре.}
+	\caption{Gradient-boosting model forecast for the number of sales in Ecuador.}
 	\label{fig:boosting}
 \end{figure}
 
-Из графика и значений метрик видно, что точность прогноза для спецификации с дополнительными переменными близка к реальным значениям числа продаж. 
+The plot and metric values show that for the specification with additional variables, the forecast accuracy is close to the actual sales values.
 
 \begin{table}[h]
 	\centering
-	\caption{Значения метрик на прогнозе модели градиентного бустинга.}
+	\caption{Metric values for the gradient-boosting model forecast.}
 	\begin{tabularx}{\textwidth}{|X|l|l|l|l|}
 		\hline
-					& MSE          & RMSE   & MAE   & Процентная ошибка \\ \hline
-		{Временные переменные}                  & 14971.71 & 122.36 & 86.83 & 0.15 \\ \hline
-	    {Временные переменные + дополнительные} & 2745.55  & 52.4   & 39.19 & 0.07 \\ \hline
+					& MSE          & RMSE   & MAE   & Percentage error \\ \hline
+		{Time features}                  & 14971.71 & 122.36 & 86.83 & 0.15 \\ \hline
+	    {Time features + additional}     & 2745.55  & 52.4   & 39.19 & 0.07 \\ \hline
 	\end{tabularx}
 	\label{tab:boosting}
 \end{table}
 
 \newpage
-\section{Заключение}
+\section{Conclusion}
 
-В работе была решена задача прогнозирования числа продаж в сети магазинов Эквадора за 2016 год. Было рассмотрено 3 способа прогнозирования:
+This work solved the problem of forecasting the number of sales for a retail chain in Ecuador for 2016. Three forecasting approaches were considered:
 \begin{itemize}
-	\item ARIMA модель с ручной настройкой параметров p, d и q
-	\item SARIMAX модель
-	\item Модель машинного обучения (градиентный бустинг, XGBRegressor)
+	\item ARIMA model with manual tuning of the parameters p, d, and q
+	\item SARIMAX model
+	\item Machine-learning model (gradient boosting, XGBRegressor)
 \end{itemize}
 
-Было установлено, что среди эконометрических моделей лучше всего себя показала модель SARIMAX. Этот результат, в частности, обусловлен ее способностью учета внешних параметров, а не только прошлые значения ряда. 
+It was found that, among the econometric models, SARIMAX performed best. This result is due in particular to its ability to account for external parameters, rather than only the past values of the series.
 
-Кроме того, в работе дополнительно был рассмотрен способ прогнозирования с помощью градиентного бустинга. Этот метод превзошел все эконометрические модели по качеству предсказаний. 
- 
-	
+In addition, the work considered forecasting with gradient boosting. This method outperformed all econometric models in prediction quality.
+
+
 \end{document}

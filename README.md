@@ -33,5 +33,4 @@ Each project folder contains code, data (or a data link), generated plots, and a
 
 ---
 
-*Course projects, Vega Institute. Some projects were completed in a team — authorship is noted in
-each project's README.*
+*Course projects, Vega Institute. Author: Maksim Kiryakin.*
